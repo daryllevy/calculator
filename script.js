@@ -7,7 +7,6 @@ const display = document.querySelector(".display");
 const equalSign = document.querySelector(".equal");
 let num1;
 let num2;
-let num3; // numéro qui prend le relai lorsqu'il y a déjà le résultat
 let isSecondNumberStarting = false;
 let sign;
 let result;
@@ -21,18 +20,30 @@ operations.addEventListener("click", (e) => {
       getNumber(e);
     } else {
       if (target.matches(".op")) {
-        getOperationSign(e);
-        if (num1 === undefined) {
-          num1 = screen.textContent;
-          display.textContent = `${num1} ${sign} `;
+        if (sign !== undefined) {
+          doTheOperation(e);
         } else {
-          display.textContent = `${screen.textContent} ${sign} `;
+          getOperationSign(e);
+          // Je vérifie si on a déjà effectuer un premier calcul
+          if (result !== undefined) {
+            num1 = result;
+            display.textContent = `${num1} ${sign} `;
+            screen.textContent = result;
+          } else {
+            if (num1 === undefined) {
+              num1 = screen.textContent;
+              display.textContent = `${num1} ${sign} `;
+            } else {
+              display.textContent = `${screen.textContent} ${sign} `;
+            }
+            console.log("num1 = " + num1);
+          }
         }
-        console.log("num1 = " + num1);
       }
     }
   }
 });
+
 
 /// Fonction pour update les nombres lorsqu'on clique sur un bouton de chiffre
 function getNumber(event) {
@@ -96,6 +107,11 @@ function getOperationSign(event) {
   if (target.matches(".op")) {
     sign = target.textContent;
     isSecondNumberStarting = true;
+
+    if (num1 !== undefined && num2 !== undefined && sign !== undefined) {
+      console.log(`automtique`);
+      result = operate(num1, num2, sign);
+    }
   }
 
   console.log("sign = " + sign);
@@ -106,33 +122,21 @@ equalSign.addEventListener("click", (e) => {
   let target = e.target;
 
   if (target.matches(".equal")) {
-    console.log("égal à été cliqué");
-
+    /// Pour éviter que le calcul s'effectue meme lorsqu'on a pas donner de nombre
+    // if (num2 !== undefined) {
+    // } else {
     if (sign !== undefined) {
       num2 = screen.textContent;
       display.textContent = `${num1} ${sign} ${num2} = `;
       console.log("num2 = " + num2);
 
-      switch (sign) {
-        case "+":
-          sign = add;
-          break;
-        case "-":
-          sign = subtract;
-          break;
-        case "/":
-          sign = divide;
-          break;
-        case "x":
-          sign = multiply;
-          break;
-      }
-
       result = operate(num1, num2, sign);
       console.log(`${num1} ${sign} ${num2} = ${result}`);
       screen.textContent = result;
+      sign = undefined;
     }
   }
+  // }
 });
 
 /// Fonction d'addition
@@ -159,8 +163,45 @@ function divide(num1, num2) {
 function operate(num1, num2, operation) {
   let result;
 
+  switch (operation) {
+    case "+":
+      operation = add;
+      break;
+    case "-":
+      operation = subtract;
+      break;
+    case "/":
+      operation = divide;
+      break;
+    case "x":
+      operation = multiply;
+      break;
+  }
+
   result = operation(+num1, +num2);
   console.log(`num1: ${num1} ${operation} num2: ${num2} = ${result}`);
 
   return result;
+}
+
+/// Fonction qui effectue l'operation
+function doTheOperation(e) {
+  if (sign !== undefined) {
+    num2 = screen.textContent;
+    display.textContent = `${num1} ${sign} ${num2} = `;
+    console.log("num2 = " + num2);
+
+    result = operate(num1, num2, sign);
+    console.log(`${num1} ${sign} ${num2} = ${result}`);
+    screen.textContent = result;
+
+    // // Je vérifie si on a déjà effectuer un premier calcul
+    if (result !== undefined) {
+      target = e.target;
+      sign = target.textContent;
+      num1 = result;
+      display.textContent = `${num1} ${sign} `;
+      isSecondNumberStarting = true;
+    }
+  }
 }
