@@ -7,6 +7,7 @@ const display = document.querySelector(".display");
 const equalSign = document.querySelector(".equal");
 let num1;
 let num2;
+let num3; // numéro qui prend le relai lorsqu'il y a déjà le résultat
 let isSecondNumberStarting = false;
 let sign;
 let result;
@@ -28,15 +29,6 @@ operations.addEventListener("click", (e) => {
           display.textContent = `${screen.textContent} ${sign} `;
         }
         console.log("num1 = " + num1);
-      } else {
-        if (sign === undefined) {
-          num1 = screen.textContent;
-          // screen.textContent = "0";
-          console.log("num1 = " + num1);
-        } else {
-          num2 = screen.textContent;
-          console.log("num2 = " + num2);
-        }
       }
     }
   }
@@ -80,7 +72,16 @@ function getNumber(event) {
 
         isSecondNumberStarting = false;
       } else {
-        screen.textContent += number;
+        //je vérifie si c'est d'abord 0 qu'on à taper pour qu'il ne soit pas le premier chiffre
+        if (screen.textContent === "0") {
+          if (number === ".") {
+            screen.textContent += number;
+          } else {
+            screen.textContent = number;
+          }
+        } else {
+          screen.textContent += number;
+        }
       }
 
       number = screen.textContent;
@@ -103,27 +104,34 @@ function getOperationSign(event) {
 /// Evènement pour effectuer l'opération
 equalSign.addEventListener("click", (e) => {
   let target = e.target;
-  if (!sign === undefined) {
-    switch (sign) {
-      case "+":
-        sign = add;
-        break;
-      case "-":
-        sign = subtract;
-        break;
-      case "/":
-        sign = divide;
-        break;
-      case "x":
-        sign = multiply;
-        break;
-    }
 
-    if (num2 === undefined) {
+  if (target.matches(".equal")) {
+    console.log("égal à été cliqué");
+
+    if (sign !== undefined) {
       num2 = screen.textContent;
-    }
+      display.textContent = `${num1} ${sign} ${num2} = `;
+      console.log("num2 = " + num2);
 
-    result = operate(num1, num2, sign);
+      switch (sign) {
+        case "+":
+          sign = add;
+          break;
+        case "-":
+          sign = subtract;
+          break;
+        case "/":
+          sign = divide;
+          break;
+        case "x":
+          sign = multiply;
+          break;
+      }
+
+      result = operate(num1, num2, sign);
+      console.log(`${num1} ${sign} ${num2} = ${result}`);
+      screen.textContent = result;
+    }
   }
 });
 
@@ -150,9 +158,9 @@ function divide(num1, num2) {
 /// Fonction pour effectuer les opérations
 function operate(num1, num2, operation) {
   let result;
-  if (!num1 === undefined && !num2 === undefined && !operation === undefined) {
-    result = operation(num1, num2);
-    console.log(`num1: ${num1} ${operation} num2: ${num2} = ${result}`);
-  }
+
+  result = operation(+num1, +num2);
+  console.log(`num1: ${num1} ${operation} num2: ${num2} = ${result}`);
+
   return result;
 }
