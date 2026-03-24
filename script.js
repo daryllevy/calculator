@@ -14,6 +14,8 @@ let sign;
 let result;
 let target;
 
+/*** MES EVENEMENTS  ***/
+
 /// Evènement pour attribuer les nombres et l'opérateur
 operations.addEventListener("click", (e) => {
   target = e.target;
@@ -58,71 +60,6 @@ clear.addEventListener("click", (e) => {
 /// Evènement pour supprimer un chiffre à la fois
 suppr.addEventListener("click", deleteNumber);
 
-/// Fonction pour update les nombres lorsqu'on clique sur un bouton de chiffre
-function getNumber(event) {
-  target = event.target;
-
-  if (target.textContent === "=") {
-    number = "";
-  } else {
-    number = target.textContent;
-
-    if (sign === undefined) {
-      // Si le nombre affiché est 0
-      if (screen.textContent === "0") {
-        if (number === ".") {
-          screen.textContent += number;
-        } else {
-          screen.textContent = number;
-        }
-      } else {
-        screen.textContent += number;
-      }
-      number = screen.textContent;
-      console.log(`number : ${number}`);
-    } else {
-      //Je vérifie si c'est le début du deuxième nombre
-      if (isSecondNumberStarting === true) {
-        // Si le nombre affiché est 0
-        if (screen.textContent === "0") {
-          if (number === ".") {
-            screen.textContent += number;
-          } else {
-            screen.textContent = number;
-          }
-        } else {
-          screen.textContent = number;
-        }
-
-        isSecondNumberStarting = false;
-      } else {
-        //je vérifie si c'est d'abord 0 qu'on à taper pour qu'il ne soit pas le premier chiffre
-        if (screen.textContent === "0") {
-          if (number === ".") {
-            screen.textContent += number;
-          } else {
-            screen.textContent = number;
-          }
-        } else {
-          screen.textContent += number;
-        }
-      }
-
-      number = screen.textContent;
-    }
-  }
-}
-
-/// Fonction pour savoir quel signe d'opération a été choisit
-function getOperationSign(event) {
-  target = event.target;
-
-  if (target.matches(".op")) {
-    sign = target.textContent;
-    isSecondNumberStarting = true;
-  }
-}
-
 /// Evènement pour effectuer l'opération
 equalSign.addEventListener("click", (e) => {
   let target = e.target;
@@ -140,6 +77,61 @@ equalSign.addEventListener("click", (e) => {
     }
   }
 });
+
+/*** MES FONCTIONS ***/
+
+/// Fonction pour update les nombres lorsqu'on clique sur un bouton de chiffre
+function getNumber(event) {
+  target = event.target;
+
+  if (target.textContent === "=") {
+    number = "";
+  } else {
+    number = target.textContent;
+
+    if (sign === undefined) {
+      // Si le premier nombre affiché est 0
+      if (screen.textContent === "0") {
+        putDot(number);
+      } else {
+        checkTheDot(number);
+      }
+      number = screen.textContent;
+      console.log(`number : ${number}`);
+    } else {
+      //Je vérifie si c'est le début du deuxième nombre
+      if (isSecondNumberStarting === true) {
+        // Si le nombre affiché est 0
+        if (screen.textContent === "0") {
+          putDot(number);
+        } else {
+          screen.textContent = number;
+        }
+
+        isSecondNumberStarting = false;
+      } else {
+        //je vérifie si c'est d'abord 0 qu'on à taper pour qu'il ne soit pas le premier chiffre
+        if (screen.textContent === "0") {
+          putDot(number);
+        } else {
+          checkTheDot(number);
+        }
+      }
+
+      number = screen.textContent;
+    }
+  }
+}
+
+/// Fonction pour savoir quel signe d'opération a été choisit
+function getOperationSign(event) {
+  target = event.target;
+
+  if (target.matches(".op")) {
+    sign = target.textContent;
+    isSecondNumberStarting = true;
+  }
+}
 
 /// Fonction d'addition
 function add(num1, num2) {
@@ -220,5 +212,22 @@ function deleteNumber() {
   } else {
     content = content.slice(0, -1);
     screen.textContent = content;
+  }
+}
+
+/// Foncton pour ajouter le "."
+function putDot(number) {
+  if (number === ".") {
+    screen.textContent += number;
+  } else {
+    screen.textContent = number;
+  }
+}
+
+/// Fonction pour savoir si le "." est déjà présent
+function checkTheDot(number) {
+  if (screen.textContent.includes(".") && number === ".") {
+  } else {
+    screen.textContent += number;
   }
 }
