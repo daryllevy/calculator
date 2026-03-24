@@ -13,18 +13,21 @@
 }
 
 .calculator {
-  width: 312px;
+  font-size: 20px;
+  font-family: Arial, system-ui, sans-serif;
+  width: 472px;
   display: flex;
   flex-direction: column;
   border: 2px solid #000;
+  border-radius: 10px;
 }
 
 /*** POUR L'AFFICHAGE ***/
 .toScreen {
-  width: 272px;
-  height: 70px;
+  width: 432px;
+  min-height: 100px;
   border: 1px solid green;
-  border-radius: 3px;
+  border-radius: 5px;
   margin: 18px auto;
   padding: 0 12px;
 
@@ -35,5 +38,63 @@
 }
 
 .toScreen .display {
+  font-size: 22px;
   height: 18px;
+}
+
+.toScreen .screen {
+  font-weight: 900;
+}
+
+/*** STYLE DES BOUTONS ***/
+
+.for-suppression {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.for-suppression button,
+.for-operations button {
+  font-size: 18px;
+  border-color: #ddd;
+}
+
+.for-suppression button {
+  font-weight: 800;
+  color: #ff4806;
+  background-color: #fff;
+  text-transform: uppercase;
+  width: 211px;
+  padding: 16px 20px;
+
+  border-radius: 5px;
+}
+
+.for-operations .block {
+  width: 472px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.for-operations button {
+  width: 47px;
+  padding: 16px;
+}
+
+.for-operations .digits {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.for-operations .operators {
+  flex: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-direction: column;
+  gap: 16px;
 }
