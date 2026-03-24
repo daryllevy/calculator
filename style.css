@@ -7,6 +7,8 @@
 .container {
   width: 100vw;
   height: 100vh;
+
+  background-color: #fcfcfc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,7 +17,8 @@
 .calculator {
   font-size: 20px;
   font-family: Arial, system-ui, sans-serif;
-  width: 472px;
+  width: 360px;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   border: 2px solid #000;
@@ -23,10 +26,14 @@
 }
 
 /*** POUR L'AFFICHAGE ***/
+.toScreen,
+.for-operations .block {
+  width: 320px;
+}
+
 .toScreen {
-  width: 432px;
   min-height: 100px;
-  border: 1px solid green;
+  border: 1px solid #008000;
   border-radius: 5px;
   margin: 18px auto;
   padding: 0 12px;
@@ -48,6 +55,10 @@
 
 /*** STYLE DES BOUTONS ***/
 
+.for-suppression button:hover,
+.block button:hover {
+  transform: scaleY(1.1);
+}
 .for-suppression {
   display: flex;
   justify-content: center;
@@ -66,28 +77,39 @@
   color: #ff4806;
   background-color: #fff;
   text-transform: uppercase;
-  width: 211px;
+  width: 158px;
   padding: 16px 20px;
 
   border-radius: 5px;
 }
 
 .for-operations .block {
-  width: 472px;
-  margin: 0 auto;
+  margin: 0 auto 18px;
   display: flex;
-  justify-content: center;
+  width: 320px;
 }
 
 .for-operations button {
-  width: 47px;
+  width: 67px;
   padding: 16px;
+  border-radius: 5px;
 }
 
 .for-operations .digits {
   display: flex;
   align-items: flex-start;
   flex-wrap: wrap;
+  gap: 16px;
+}
+
+.digits .digit:hover {
+  background-color: #fff;
+}
+
+.digits .equal {
+  background-color: #ff4806;
+  color: #fff;
+  border-color: #ff4806;
 }
 
 .for-operations .operators {
@@ -97,4 +119,9 @@
   justify-content: flex-end;
   flex-direction: column;
   gap: 16px;
+}
+
+.operators button {
+  color: #ff4806;
+  background-color: #fff;
 }
