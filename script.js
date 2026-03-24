@@ -4,6 +4,8 @@ const operator = document.querySelector(".operators");
 const operations = document.querySelector(".for-operations");
 const screen = document.querySelector(".screen");
 const display = document.querySelector(".display");
+const clear = document.querySelector(".clear");
+const suppr = document.querySelector(".delete");
 const equalSign = document.querySelector(".equal");
 let num1;
 let num2;
@@ -21,22 +23,21 @@ operations.addEventListener("click", (e) => {
     } else {
       if (target.matches(".op")) {
         if (sign !== undefined) {
-          doTheOperation(e);
+          // Je verifie si c'est un changement de signe d'opération
+          if (isSecondNumberStarting) {
+            getOperationSign(e);
+            display.textContent = `${num1} ${sign} `;
+          } else {
+            doTheOperation(e);
+          }
         } else {
           getOperationSign(e);
-          // Je vérifie si on a déjà effectuer un premier calcul
-          if (result !== undefined) {
-            num1 = result;
+
+          if (num1 === undefined) {
+            num1 = screen.textContent;
             display.textContent = `${num1} ${sign} `;
-            screen.textContent = result;
           } else {
-            if (num1 === undefined) {
-              num1 = screen.textContent;
-              display.textContent = `${num1} ${sign} `;
-            } else {
-              display.textContent = `${screen.textContent} ${sign} `;
-            }
-            console.log("num1 = " + num1);
+            display.textContent = `${screen.textContent} ${sign} `;
           }
         }
       }
@@ -44,6 +45,18 @@ operations.addEventListener("click", (e) => {
   }
 });
 
+/// Evènement pour clear
+clear.addEventListener("click", (e) => {
+  display.textContent = "";
+  screen.textContent = "0";
+  num1 = undefined;
+  num2 = undefined;
+  sign = undefined;
+  result = undefined;
+});
+
+/// Evènement pour supprimer un chiffre à la fois
+suppr.addEventListener("click", deleteNumber);
 
 /// Fonction pour update les nombres lorsqu'on clique sur un bouton de chiffre
 function getNumber(event) {
@@ -107,14 +120,7 @@ function getOperationSign(event) {
   if (target.matches(".op")) {
     sign = target.textContent;
     isSecondNumberStarting = true;
-
-    if (num1 !== undefined && num2 !== undefined && sign !== undefined) {
-      console.log(`automtique`);
-      result = operate(num1, num2, sign);
-    }
   }
-
-  console.log("sign = " + sign);
 }
 
 /// Evènement pour effectuer l'opération
@@ -122,9 +128,6 @@ equalSign.addEventListener("click", (e) => {
   let target = e.target;
 
   if (target.matches(".equal")) {
-    /// Pour éviter que le calcul s'effectue meme lorsqu'on a pas donner de nombre
-    // if (num2 !== undefined) {
-    // } else {
     if (sign !== undefined) {
       num2 = screen.textContent;
       display.textContent = `${num1} ${sign} ${num2} = `;
@@ -136,7 +139,6 @@ equalSign.addEventListener("click", (e) => {
       sign = undefined;
     }
   }
-  // }
 });
 
 /// Fonction d'addition
@@ -156,6 +158,9 @@ function multiply(num1, num2) {
 
 /// Fonction divide
 function divide(num1, num2) {
+  if (num1 === 0 || num2 === 0) {
+    alert("Can't divide by zero");
+  }
   return num1 / num2;
 }
 
@@ -188,10 +193,10 @@ function operate(num1, num2, operation) {
 function doTheOperation(e) {
   if (sign !== undefined) {
     num2 = screen.textContent;
+    result = operate(num1, num2, sign);
+
     display.textContent = `${num1} ${sign} ${num2} = `;
     console.log("num2 = " + num2);
-
-    result = operate(num1, num2, sign);
     console.log(`${num1} ${sign} ${num2} = ${result}`);
     screen.textContent = result;
 
@@ -203,5 +208,17 @@ function doTheOperation(e) {
       display.textContent = `${num1} ${sign} `;
       isSecondNumberStarting = true;
     }
+  }
+}
+
+/// Fonction pour supprimer des chiffre
+function deleteNumber() {
+  let content = screen.textContent;
+
+  if (content.length === 1) {
+    screen.textContent = "0";
+  } else {
+    content = content.slice(0, -1);
+    screen.textContent = content;
   }
 }
