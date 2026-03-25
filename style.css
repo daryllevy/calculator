@@ -45,8 +45,9 @@
 }
 
 .toScreen .display {
-  font-size: 22px;
+  font-size: 18px;
   height: 18px;
+  margin-bottom: 12px;
 }
 
 .toScreen .screen {
