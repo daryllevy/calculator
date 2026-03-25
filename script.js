@@ -11,40 +11,17 @@ let num1;
 let num2;
 let isSecondNumberStarting = false;
 let sign;
+let keyboard = "desactive";
+const keyboardDigits = "0123456789.=";
 let result;
 let target;
 
 /*** MES EVENEMENTS  ***/
 
-/// Evènement pour attribuer les nombres et l'opérateur
-operations.addEventListener("click", (e) => {
-  target = e.target;
-  if (target.matches("button")) {
-    if (target.matches(".digit")) {
-      getNumber(e);
-    } else {
-      if (target.matches(".op")) {
-        if (sign !== undefined) {
-          // Je verifie si c'est un changement de signe d'opération
-          if (isSecondNumberStarting) {
-            getOperationSign(e);
-            display.textContent = `${num1} ${sign} `;
-          } else {
-            doTheOperation(e);
-          }
-        } else {
-          getOperationSign(e);
-
-          if (num1 === undefined) {
-            num1 = screen.textContent;
-            display.textContent = `${num1} ${sign} `;
-          } else {
-            display.textContent = `${screen.textContent} ${sign} `;
-          }
-        }
-      }
-    }
-  }
+/// Evènement (principal) pour attribuer les nombres et l'opérateur
+operations.addEventListener("click", (e) => getNumberAndOperator(e));
+window.addEventListener("keydown", (e) => {
+  (getNumberAndOperator(e), triggerOperation(e));
 });
 
 /// Evènement pour clear
@@ -61,29 +38,37 @@ clear.addEventListener("click", (e) => {
 suppr.addEventListener("click", deleteNumber);
 
 /// Evènement pour effectuer l'opération
-equalSign.addEventListener("click", (e) => {
-  let target = e.target;
-
-  if (target.matches(".equal")) {
-    if (sign !== undefined) {
-      num2 = screen.textContent;
-      display.textContent = `${num1} ${sign} ${num2} = `;
-      console.log("num2 = " + num2);
-
-      result = operate(num1, num2, sign);
-      console.log(`${num1} ${sign} ${num2} = ${result}`);
-      screen.textContent = result;
-      sign = undefined;
-    }
-  }
-});
+equalSign.addEventListener("click", (e) => triggerOperation(e));
 
 /*** MES FONCTIONS ***/
 
-/// Fonction pour update les nombres lorsqu'on clique sur un bouton de chiffre
-function getNumber(event) {
-  target = event.target;
+/// Fonction pour attribuer les nombres et l'opérateur
+function getNumberAndOperator(event) {
+  if (event.type === "keydown") {
+    target = event.key;
+    keyboard = "active";
+    getNumAndOpByKey(event);
+  } else {
+    target = event.target;
+    getNumAndOpByClick(event);
+  }
+}
 
+/// Fonction pour update les nombres
+function getNumber(event) {
+  if (event.type === "click") {
+    target = event.target;
+    getNumberByClick();
+  } else {
+    target = event.key;
+
+    keyboard = "active";
+    getNumberByKey();
+  }
+}
+
+/// Fonction qui update les nombres par click
+function getNumberByClick() {
   if (target.textContent === "=") {
     number = "";
   } else {
@@ -123,13 +108,126 @@ function getNumber(event) {
   }
 }
 
+/// Fonction qui update les nombres par touche clavier
+function getNumberByKey() {
+  if (target === "=") {
+    number = "";
+  } else {
+    number = target;
+
+    if (sign === undefined) {
+      // Si le premier nombre affiché est 0
+      if (screen.textContent === "0") {
+        putDot(number);
+      } else {
+        checkTheDot(number);
+      }
+      number = screen.textContent;
+      console.log(`number : ${number}`);
+    } else {
+      //Je vérifie si c'est le début du deuxième nombre
+      if (isSecondNumberStarting === true) {
+        // Si le nombre affiché est 0
+        if (screen.textContent === "0") {
+          putDot(number);
+        } else {
+          screen.textContent = number;
+        }
+
+        isSecondNumberStarting = false;
+      } else {
+        //je vérifie si c'est d'abord 0 qu'on à taper pour qu'il ne soit pas le premier chiffre
+        if (screen.textContent === "0") {
+          putDot(number);
+        } else {
+          checkTheDot(number);
+        }
+      }
+
+      number = screen.textContent;
+    }
+  }
+}
+
+/// Fonction pour avoir le nombre et l'opérateur par clic
+function getNumAndOpByClick(event) {
+  if (target.matches("button")) {
+    if (target.matches(".digit")) {
+      getNumber(event);
+    } else {
+      if (target.matches(".op")) {
+        if (sign !== undefined) {
+          // Je verifie si c'est un changement de signe d'opération
+          if (isSecondNumberStarting) {
+            getOperationSign(event);
+            display.textContent = `${num1} ${sign} `;
+          } else {
+            doTheOperation(event);
+          }
+        } else {
+          getOperationSign(event);
+
+          if (num1 === undefined) {
+            num1 = screen.textContent;
+            display.textContent = `${num1} ${sign} `;
+          } else {
+            display.textContent = `${screen.textContent} ${sign} `;
+          }
+        }
+      }
+    }
+  }
+}
+
+/// Fonction pour avoir le nombre et l'opérateur par key
+function getNumAndOpByKey(event) {
+  if (keyboardDigits.includes(target)) {
+    console.log(target + " est un digit");
+    getNumber(event);
+  } else {
+    //Je vérifie si c'est un signe d'opération
+    if (target == "+" || target == "-" || target == "/" || target == "*") {
+      if (sign !== undefined) {
+        // Je verifie si c'est un changement de signe d'opération
+        if (isSecondNumberStarting) {
+          getOperationSign(event);
+          display.textContent = `${num1} ${sign} `; // ATTENTION
+        } else {
+          doTheOperation(event);
+        }
+      } else {
+        getOperationSign(event);
+
+        if (num1 === undefined) {
+          num1 = screen.textContent;
+          display.textContent = `${num1} ${sign} `;
+        } else {
+          display.textContent = `${screen.textContent} ${sign} `;
+        }
+      }
+    } else {
+    }
+  }
+}
+
 /// Fonction pour savoir quel signe d'opération a été choisit
 function getOperationSign(event) {
-  target = event.target;
+  if (event.type === "click") {
+    target = event.target;
 
-  if (target.matches(".op")) {
-    sign = target.textContent;
-    isSecondNumberStarting = true;
+    if (target.matches(".op")) {
+      sign = target.textContent;
+      isSecondNumberStarting = true;
+    }
+  } else {
+    target = event.key;
+
+    if (target == "+" || target == "-" || target == "/" || target == "*") {
+      sign = target;
+      isSecondNumberStarting = true;
+    } else {
+      console.log(`${target} n'est pas un signe`);
+    }
   }
 }
 
@@ -173,12 +271,50 @@ function operate(num1, num2, operation) {
     case "x":
       operation = multiply;
       break;
+    case "*":
+      operation = multiply;
+      break;
   }
 
   result = operation(+num1, +num2);
   console.log(`num1: ${num1} ${operation} num2: ${num2} = ${result}`);
 
   return result;
+}
+
+///Fonction qui déclenche l'opération
+function triggerOperation(event) {
+  if (event.type === "click") {
+    let target = event.target;
+
+    if (target.matches(".equal")) {
+      if (sign !== undefined) {
+        num2 = screen.textContent;
+        display.textContent = `${num1} ${sign} ${num2} = `;
+        console.log("num2 = " + num2);
+
+        result = operate(num1, num2, sign);
+        console.log(`${num1} ${sign} ${num2} = ${result}`);
+        screen.textContent = result;
+        sign = undefined;
+      }
+    }
+  } else {
+    let target = event.key;
+
+    if (target === "=") {
+      if (sign !== undefined) {
+        num2 = screen.textContent;
+        display.textContent = `${num1} ${sign} ${num2} = `;
+        console.log("num2 = " + num2);
+
+        result = operate(num1, num2, sign);
+        console.log(`${num1} ${sign} ${num2} = ${result}`);
+        screen.textContent = result;
+        sign = undefined;
+      }
+    }
+  }
 }
 
 /// Fonction qui effectue l'operation
@@ -194,11 +330,19 @@ function doTheOperation(e) {
 
     // // Je vérifie si on a déjà effectuer un premier calcul
     if (result !== undefined) {
-      target = e.target;
-      sign = target.textContent;
-      num1 = result;
-      display.textContent = `${num1} ${sign} `;
-      isSecondNumberStarting = true;
+      if (e.type === "click") {
+        target = e.target;
+        sign = target.textContent;
+        num1 = result;
+        display.textContent = `${num1} ${sign} `;
+        isSecondNumberStarting = true;
+      } else {
+        target = e.key;
+        sign = target;
+        num1 = result;
+        display.textContent = `${num1} ${sign} `;
+        isSecondNumberStarting = true;
+      }
     }
   }
 }
