@@ -18,24 +18,20 @@ let target;
 
 /*** MES EVENEMENTS  ***/
 
-/// Evènement (principal) pour attribuer les nombres et l'opérateur
+/// Evènements pour attribuer les nombres et l'opérateur
 operations.addEventListener("click", (e) => getNumberAndOperator(e));
 window.addEventListener("keydown", (e) => {
-  (getNumberAndOperator(e), triggerOperation(e));
+  (getNumberAndOperator(e),
+    triggerOperation(e),
+    clearScreen(e),
+    deleteNumber(e));
 });
 
 /// Evènement pour clear
-clear.addEventListener("click", (e) => {
-  display.textContent = "";
-  screen.textContent = "0";
-  num1 = undefined;
-  num2 = undefined;
-  sign = undefined;
-  result = undefined;
-});
+clear.addEventListener("click", (e) => clearScreen(e));
 
 /// Evènement pour supprimer un chiffre à la fois
-suppr.addEventListener("click", deleteNumber);
+suppr.addEventListener("click", (e) => deleteNumber(e));
 
 /// Evènement pour effectuer l'opération
 equalSign.addEventListener("click", (e) => triggerOperation(e));
@@ -348,14 +344,27 @@ function doTheOperation(e) {
 }
 
 /// Fonction pour supprimer des chiffre
-function deleteNumber() {
+function deleteNumber(e) {
   let content = screen.textContent;
 
-  if (content.length === 1) {
-    screen.textContent = "0";
+  if (e.type == "keydown") {
+    let target = e.key;
+
+    if (target == "Backspace") {
+      if (content.length === 1) {
+        screen.textContent = "0";
+      } else {
+        content = content.slice(0, -1);
+        screen.textContent = content;
+      }
+    }
   } else {
-    content = content.slice(0, -1);
-    screen.textContent = content;
+    if (content.length === 1) {
+      screen.textContent = "0";
+    } else {
+      content = content.slice(0, -1);
+      screen.textContent = content;
+    }
   }
 }
 
@@ -373,5 +382,28 @@ function checkTheDot(number) {
   if (screen.textContent.includes(".") && number === ".") {
   } else {
     screen.textContent += number;
+  }
+}
+
+/// Fonction pour clear
+function clearScreen(e) {
+  if (e.type == "keydown") {
+    let target = e.key;
+
+    if (target === "Enter") {
+      display.textContent = "";
+      screen.textContent = "0";
+      num1 = undefined;
+      num2 = undefined;
+      sign = undefined;
+      result = undefined;
+    }
+  } else {
+    display.textContent = "";
+    screen.textContent = "0";
+    num1 = undefined;
+    num2 = undefined;
+    sign = undefined;
+    result = undefined;
   }
 }
